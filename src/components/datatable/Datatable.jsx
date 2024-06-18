@@ -8,7 +8,7 @@ const Datatable = () => {
   const [data, setData] = useState(userRows);
 
   const handleDelete = (id) => {
-//    setData(data.filter((item) => item.id !== id));
+    setData(data.filter((item) => item.id !== id));
   };
 
   const actionColumn = [
@@ -37,7 +37,7 @@ const Datatable = () => {
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        <span>Add New User</span>
+        <span>User Management</span>
         <Link to="/users/userId/new" style={{ textDecoration: "none" }}>
           <span className="link">Add New</span>
         </Link>

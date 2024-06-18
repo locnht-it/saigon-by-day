@@ -1,18 +1,30 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import "./navbar.scss";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import LanguageOutlinedIcon from "@mui/icons-material/LanguageOutlined";
 import Switch from "@mui/material/Switch";
 import FullscreenOutlinedIcon from "@mui/icons-material/FullscreenOutlined";
 import {
+  AccountCircle,
   ChatBubbleOutlineOutlined,
   NotificationsActiveOutlined,
 } from "@mui/icons-material";
-import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
+
 import { DarkModeContext } from "../../context/darkModeContext";
+import { Menu, MenuItem } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
   const { dispatch } = useContext(DarkModeContext);
+
+  const handleUserClick = (e) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
   return (
     <div className="navbar">
       <div className="navbarContainer">
@@ -43,15 +55,31 @@ const Navbar = () => {
             <ChatBubbleOutlineOutlined className="icon" />
             <div className="counter">5</div>
           </div>
-          <div className="item">
+          {/* <div className="item">
             <ListOutlinedIcon className="icon" />
-          </div>
+          </div> */}
           <div className="item">
-            <img
-              src="/assets/person/LocNgo.jpg"
-              alt=""
-              className="profileImg"
-            />
+            <AccountCircle className="icon" onClick={handleUserClick} />
+            <Menu
+              keepMounted
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleCloseMenu}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem onClick={handleCloseMenu}>
+                <Link to="/users/userId" style={{ textDecoration: "none" }}>
+                  My account
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={handleCloseMenu}>
+                <Link to="/login" style={{ textDecoration: "none" }}>
+                  Logout
+                </Link>
+              </MenuItem>
+            </Menu>
           </div>
         </div>
       </div>

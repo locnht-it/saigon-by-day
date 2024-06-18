@@ -1,0 +1,10 @@
+.destination {
+  display: flex;
+  width: 100%;
+  background-color: whitesmoke;
+  color: #616161;
+
+  .destinationContainer {
+    flex: 6;
+  }
+}

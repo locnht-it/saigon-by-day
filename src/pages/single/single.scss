@@ -65,23 +65,12 @@
             }
           }
         }
-        .title{
-            font-size: 20px;
-            margin-bottom: 20px;
-            color: gray;
+        .title {
+          font-size: 20px;
+          margin-bottom: 20px;
+          color: gray;
         }
       }
-
-      .right {
-        flex: 2;
-      }
-    }
-
-    .bottom{
-        margin: 10px 20px;
-        padding: 20px;
-        -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
-        box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
     }
   }
 }

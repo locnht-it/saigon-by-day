@@ -1,59 +1,49 @@
 import React, { useState } from "react";
-import "./packageindaytable.scss";
+import "./ordertable.scss";
 import { DataGrid } from "@mui/x-data-grid";
+import { date } from "yup";
 
 export const rows = [
   {
     id: 1,
-    packageId: 1,
-    date: "5/24/2024",
-    price: 3_000_000,
-    status: "active",
-    numberAttendance: 5,
+    userId: 1,
+    totalPrice: 2500000,
+    date: "5/30/2024",
+    method: "Bank Transfer",
+    status: "paid",
+    purchaseDate: "5/30/2024",
   },
   {
     id: 2,
-    packageId: 1,
-    date: "6/1/2024",
-    price: 4_000_000,
-    status: "active",
-    numberAttendance: 5,
+    userId: 2,
+    totalPrice: 3500000,
+    date: "6/01/2024",
+    method: "Bank Transfer",
+    status: "pending",
+    purchaseDate: "",
   },
   {
     id: 3,
-    packageId: 2,
-    date: "5/30/2024",
-    price: 1_500_000,
-    status: "inactive",
-    numberAttendance: 7,
-  },
-  {
-    id: 4,
-    packageId: 3,
-    date: "5/31/2024",
-    price: 5_000_000,
-    status: "active",
-    numberAttendance: 10,
-  },
-  {
-    id: 5,
-    packageId: 4,
-    date: "5/25/2024",
-    price: 3_000_000,
-    status: "inactive",
-    numberAttendance: 5,
+    userId: 3,
+    totalPrice: 2000000,
+    date: "5/29/2024",
+    method: "Bank Transfer",
+    status: "rejected",
+    purchaseDate: "",
   },
 ];
 
 export const columns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "packageId", headerName: "Package ID", width: 200 },
-  { field: "date", headerName: "Date", width: 200 },
-  { field: "numberAttendance", headerName: "Number Attendance", width: 200 },
+  { field: "id", headerName: "ID", width: 50 },
+  { field: "userId", headerName: "User ID", width: 70 },
+  { field: "totalPrice", headerName: "Total Price", width: 200 },
+  { field: "date", headerName: "Order Date", width: 200 },
+  { field: "method", headerName: "Method", width: 200 },
+  { field: "purchaseDate", headerName: "Purchase Date", width: 200 },
   {
     field: "status",
     headerName: "Status",
-    width: 160,
+    width: 100,
     renderCell: (params) => {
       return (
         <div className={`cellWithStatus ${params.row.status}`}>
@@ -64,14 +54,14 @@ export const columns = [
   },
 ];
 
-const PackageInDayTable = () => {
+const OrderTable = () => {
   const [data, setData] = useState(rows);
 
   const actionColumn = [
     {
       field: "action",
       headerName: "Action",
-      width: 300,
+      width: 200,
       renderCell: (params) => {
         return (
           <div className="cellAction">
@@ -86,7 +76,7 @@ const PackageInDayTable = () => {
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        <span>PackageInDay Management</span>
+        <span>Order Management</span>
         <span className="link">Add New</span>
       </div>
       <DataGrid
@@ -101,4 +91,4 @@ const PackageInDayTable = () => {
   );
 };
 
-export default PackageInDayTable;
+export default OrderTable;
