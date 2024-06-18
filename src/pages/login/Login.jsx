@@ -46,7 +46,7 @@ export default function Login() {
       password: data.get("password"),
     });
 
-    navigate("/");
+    navigate("/home");
   };
 
   return (

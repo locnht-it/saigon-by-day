@@ -22,7 +22,7 @@ function Copyright(props) {
     >
       {"Copyright © "}
       <Link color="inherit" href="https://trip-by-day-frontend.vercel.app/">
-        Your Website
+        Trip By Day
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}

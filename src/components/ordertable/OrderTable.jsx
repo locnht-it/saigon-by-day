@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./ordertable.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import { date } from "yup";
 
 export const rows = [
   {

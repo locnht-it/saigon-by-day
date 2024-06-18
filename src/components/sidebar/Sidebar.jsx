@@ -2,15 +2,12 @@ import React from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import "./sidebar.scss";
 import {
-  CalendarMonthOutlined,
   CreditCardOutlined,
   DiamondOutlined,
   DnsOutlined,
   ExitToAppOutlined,
   InsertChartOutlinedSharp,
   LocalGroceryStoreOutlined,
-  ManageAccountsOutlined,
-  NotificationsActiveOutlined,
   Person3Outlined,
   SettingsOutlined,
 } from "@mui/icons-material";
@@ -20,7 +17,7 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="top">
-        <Link to="/" style={{ textDecoration: "none" }}>
+        <Link to="/home" style={{ textDecoration: "none" }}>
           <span className="logo">TripByDay</span>
         </Link>
       </div>
@@ -28,7 +25,7 @@ const Sidebar = () => {
       <div className="bottom">
         <ul>
           <p className="title">MAIN</p>
-          <Link to="/" style={{ textDecoration: "none" }}>
+          <Link to="/home" style={{ textDecoration: "none" }}>
             <li>
               <DashboardIcon className="icon" />
               <span>Dashboard</span>

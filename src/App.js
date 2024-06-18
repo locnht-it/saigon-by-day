@@ -10,7 +10,6 @@ import { userInputs, packageInDayInputs } from "./formData.js";
 import "./style/dark.scss";
 import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext.js";
-import Header from "./pages/header/Header.jsx";
 import ForgotPassword from "./pages/forgotpassword/ForgotPassword.jsx";
 import Package from "./pages/package/Package.jsx";
 import PackageInDestination from "./pages/packageindestination/PackageInDestination.jsx";
@@ -21,6 +20,14 @@ import Order from "./pages/order/Order.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <Login />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/home",
     element: <Home />,
   },
   {
@@ -64,10 +71,6 @@ const router = createBrowserRouter([
   {
     path: "/users/:userId",
     element: <Single />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
   },
   {
     path: "/register",
