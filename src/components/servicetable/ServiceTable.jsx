@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./servicetable.scss";
 import { DataGrid } from "@mui/x-data-grid";
+import { useUser } from "../../app/userContext";
 
 export const rows = [
   {
@@ -77,6 +78,7 @@ export const columns = [
 
 const ServiceTable = () => {
   const [data, setData] = useState(rows);
+  const { user } = useUser();
 
   const actionColumn = [
     {

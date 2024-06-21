@@ -1,30 +1,30 @@
-import axiosClient from "./axiosClient";
+// import axiosClient from "./axiosClient";
 
-const packageInDayApi = {
-  getAll(params) {
-    const url = `/packageInDays`;
-    return axiosClient.get(url, { params: params });
-  },
+// const packageInDayApi = {
+//   getAll(params) {
+//     const url = `/packageInDays`;
+//     return axiosClient.get(url, { params: params });
+//   },
 
-  get(id) {
-    const url = `/packageInDays/${id}`;
-    return axiosClient.get(url);
-  },
+//   get(id) {
+//     const url = `/packageInDays/${id}`;
+//     return axiosClient.get(url);
+//   },
 
-  add(data) {
-    const url = `/packageInDays`;
-    return axiosClient.post(url, data);
-  },
+//   add(data) {
+//     const url = `/packageInDays`;
+//     return axiosClient.post(url, data);
+//   },
 
-  update(data) {
-    const url = `/packageInDays/${data.id}`;
-    return axiosClient.put(url, data);
-  },
+//   update(data) {
+//     const url = `/packageInDays/${data.id}`;
+//     return axiosClient.put(url, data);
+//   },
 
-  remove(id) {
-    const url = `/packageInDays/${id}`;
-    return axiosClient.delete(url);
-  },
-};
+//   remove(id) {
+//     const url = `/packageInDays/${id}`;
+//     return axiosClient.delete(url);
+//   },
+// };
 
-export default packageInDayApi;
+// export default packageInDayApi;

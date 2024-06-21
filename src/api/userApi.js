@@ -1,40 +1,14 @@
-import axiosClient from "./axiosClient";
+import axios from "axios";
 
-const userApi = {
-  register(data) {
-    const url = "/auth/local/register";
-    return axiosClient.post(url, data);
-  },
+const REST_API_BASE_URL = "http://localhost:8080/api/v1";
 
-  login(data) {
-    const url = "/auth/local";
-    return axiosClient.post(url, data);
-  },
-
-  getAll(params) {
-    const url = `/users`;
-    return axiosClient.get(url, { params: params });
-  },
-
-  get(id) {
-    const url = `/users/${id}`;
-    return axiosClient.get(url);
-  },
-
-  add(data) {
-    const url = `/users`;
-    return axiosClient.post(url, data);
-  },
-
-  update(data) {
-    const url = `/users/${data.id}`;
-    return axiosClient.put(url, data);
-  },
-
-  remove(id) {
-    const url = `/users/${id}`;
-    return axiosClient.delete(url);
-  },
+export const getAuthToken = () => {
+  return window.localStorage.getItem("auth_token");
 };
 
-export default userApi;
+export const setAuthToken = (token) => {
+  window.localStorage.setItem("auth_token", token);
+};
+
+export const signIn = (data) =>
+  axios.post(REST_API_BASE_URL + "/auth/signin", data);

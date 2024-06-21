@@ -13,10 +13,18 @@ import {
 import { DarkModeContext } from "../../context/darkModeContext";
 import { Menu, MenuItem } from "@mui/material";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { dispatch } = useContext(DarkModeContext);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
 
   const handleUserClick = (e) => {
     setAnchorEl(e.currentTarget);
@@ -74,11 +82,7 @@ const Navbar = () => {
                   My account
                 </Link>
               </MenuItem>
-              <MenuItem onClick={handleCloseMenu}>
-                <Link to="/login" style={{ textDecoration: "none" }}>
-                  Logout
-                </Link>
-              </MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>
         </div>

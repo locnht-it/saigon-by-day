@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import "./sidebar.scss";
 import {
@@ -11,9 +12,17 @@ import {
   Person3Outlined,
   SettingsOutlined,
 } from "@mui/icons-material";
+import LocationCityIcon from "@mui/icons-material/LocationCity";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   return (
     <div className="sidebar">
       <div className="top">
@@ -75,6 +84,13 @@ const Sidebar = () => {
             </li>
           </Link>
 
+          <Link to="/city" style={{ textDecoration: "none" }}>
+            <li>
+              <LocationCityIcon className="icon" />
+              <span>City</span>
+            </li>
+          </Link>
+
           <Link to="/orders" style={{ textDecoration: "none" }}>
             <li>
               <CreditCardOutlined className="icon" />
@@ -83,12 +99,10 @@ const Sidebar = () => {
           </Link>
 
           <p className="title">EXIT</p>
-          <Link to="/login" style={{ textDecoration: "none" }}>
-            <li>
-              <ExitToAppOutlined className="icon" />
-              <span>Logout</span>
-            </li>
-          </Link>
+          <li onClick={handleLogout} style={{ cursor: "pointer" }}>
+            <ExitToAppOutlined className="icon" />
+            <span>Logout</span>
+          </li>
         </ul>
       </div>
     </div>

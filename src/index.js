@@ -5,6 +5,7 @@ import { DarkModeContextProvider } from "./context/darkModeContext";
 import { Provider } from "react-redux";
 import store from "./app/store";
 import { SnackbarProvider } from "notistack";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
