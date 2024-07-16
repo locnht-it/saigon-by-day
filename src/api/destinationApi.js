@@ -1,38 +1,54 @@
-// import axiosClient from "./axiosClient";
+import axios from "axios";
+import { getAuthToken } from "./axios_helper";
 
-// const destinationApi = {
-//   getAll(params) {
-//     const url = `/destinations`;
-//     return axiosClient.get(url, { params: params });
-//   },
+const REST_API_BASE_URL = "https://trip-by-day-backend.onrender.com/api/v1";
 
-//   get(id) {
-//     const url = `/destinations/${id}`;
-//     return axiosClient.get(url);
-//   },
+const getHeaders = () => {
+  return {
+    Authorization: `Bearer ${getAuthToken()}`,
+  };
+};
 
-//   add(data) {
-//     const url = `/destinations`;
-//     return axiosClient.post(url, data);
-//   },
+export const listDestinations = (page, limit) => {
+  return axios.get(REST_API_BASE_URL + "/destination/find-all", {
+    params: {
+      page: page,
+      limit: limit,
+    },
+    headers: getHeaders(),
+  });
+};
 
-//   update(data) {
-//     const url = `/destinations/${data.id}`;
-//     return axiosClient.put(url, data);
-//   },
+export const deleteDestination = (destinationId) => {
+  return axios.delete(
+    REST_API_BASE_URL + "/destination/delete/" + destinationId,
+    {
+      headers: getHeaders(),
+    }
+  );
+};
 
-//   remove(id) {
-//     const url = `/destinations/${id}`;
-//     return axiosClient.delete(url);
-//   },
-//   uploadFile(data) {
-//     const url = `/destinations/gallery/${data.id}/upload`;
-//     return axiosClient.post(url, data);
-//   },
-//   updateFile(data) {
-//     const url = `/destinations/gallery/${data.id}/update`;
-//     return axiosClient.post(url, data);
-//   },
-// };
+export const createDestination = (destination) => {
+  return axios.post(REST_API_BASE_URL + "/destination/save", destination, {
+    headers: getHeaders(),
+  });
+};
 
-// export default destinationApi;
+export const getDestination = (destinationId) => {
+  return axios.get(
+    REST_API_BASE_URL + "/destination/find-id/" + destinationId,
+    {
+      headers: getHeaders(),
+    }
+  );
+};
+
+export const updateDestination = (destinationId, destination) => {
+  return axios.put(
+    REST_API_BASE_URL + "/destination/update/" + destinationId,
+    destination,
+    {
+      headers: getHeaders(),
+    }
+  );
+};

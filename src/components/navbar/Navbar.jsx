@@ -20,6 +20,7 @@ const Navbar = () => {
   const { dispatch } = useContext(DarkModeContext);
 
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const handleLogout = () => {
     localStorage.clear();
@@ -33,13 +34,17 @@ const Navbar = () => {
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
+
+  const goToProfile = (id) => {
+    navigate(`/profile  `);
+  };
   return (
     <div className="navbar">
       <div className="navbarContainer">
-        <div className="search">
+        {/* <div className="search">
           <input type="text" placeholder="search" />
           <SearchOutlinedIcon />
-        </div>
+        </div> */}
         <div className="items">
           <div className="item">
             <LanguageOutlinedIcon className="icon" />
@@ -77,10 +82,13 @@ const Navbar = () => {
                 "aria-labelledby": "basic-button",
               }}
             >
-              <MenuItem onClick={handleCloseMenu}>
-                <Link to="/users/userId" style={{ textDecoration: "none" }}>
-                  My account
-                </Link>
+              <MenuItem
+                onClick={() => {
+                  goToProfile(user.id);
+                  handleCloseMenu();
+                }}
+              >
+                My account
               </MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>

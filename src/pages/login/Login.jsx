@@ -12,7 +12,7 @@ import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { signIn, setAuthToken, getAuthToken } from "../../api/userApi";
-import { useUser } from "../../app/userContext";
+
 function Copyright(props) {
   return (
     <Typography
@@ -35,15 +35,13 @@ const defaultTheme = createTheme();
 
 export default function Login() {
   const navigate = useNavigate();
-
-  const { setUser } = useUser();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({
     login: "",
     password: "",
   });
-  const [errorMessageLogin, setErrorMessageLogin] = useState(""); // Trạng thái để lưu thông báo lỗi
+  const [errorMessageLogin, setErrorMessageLogin] = useState("");
 
   function handleEmailChange(e) {
     setLogin(e.target.value);
@@ -58,22 +56,17 @@ export default function Login() {
 
     if (validateForm()) {
       const data = { login, password };
-      console.log(data);
-
       signIn(data)
         .then((response) => {
-          console.log(response.data);
           setAuthToken(response.data.content.token);
-          setUser(response.data.content.userDTO);
-          console.log(response.data.content.userDTO.id);
-          navigate("/home");
+          localStorage.setItem(
+            "user",
+            JSON.stringify(response.data.content.userDTO)
+          );
+          navigate("/");
         })
         .catch((error) => {
-          console.error(error);
-          setErrorMessageLogin(
-            // error.response?.data?.message ||
-            "Failed to log in. Please try again."
-          ); // Cập nhật trạng thái với thông báo lỗi
+          setErrorMessageLogin("Failed to log in. Please try again.");
         });
     }
   }
@@ -111,7 +104,8 @@ export default function Login() {
           sm={4}
           md={7}
           sx={{
-            backgroundImage: "url(https://wallpaperaccess.com/full/461988.jpg)",
+            backgroundImage:
+              "url(https://cdn.mobilecity.vn/mobilecity-vn/images/2024/04/hinh-nen-bien-15.jpg.webp)",
             backgroundRepeat: "no-repeat",
             backgroundColor: (t) =>
               t.palette.mode === "light"
@@ -166,7 +160,7 @@ export default function Login() {
                 error={!!errors.password}
                 helperText={errors.password}
               />
-              {errorMessageLogin && ( // Hiển thị thông báo lỗi nếu có
+              {errorMessageLogin && (
                 <Typography
                   color="error"
                   variant="body2"
@@ -187,7 +181,7 @@ export default function Login() {
               </Button>
               <Grid container>
                 <Grid item xs>
-                  <Link href="/forgotpassword" variant="body2">
+                  <Link href="/forgot-password" variant="body2">
                     Forgot password?
                   </Link>
                 </Grid>

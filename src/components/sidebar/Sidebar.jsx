@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import "./sidebar.scss";
 import {
+  AddLocationAltOutlined,
+  BackpackOutlined,
+  CardTravelOutlined,
   CreditCardOutlined,
   DiamondOutlined,
   DnsOutlined,
@@ -11,6 +14,7 @@ import {
   LocalGroceryStoreOutlined,
   Person3Outlined,
   SettingsOutlined,
+  TripOriginOutlined,
 } from "@mui/icons-material";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
 import { Link } from "react-router-dom";
@@ -26,7 +30,7 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="top">
-        <Link to="/home" style={{ textDecoration: "none" }}>
+        <Link to="/" style={{ textDecoration: "none" }}>
           <span className="logo">TripByDay</span>
         </Link>
       </div>
@@ -34,67 +38,54 @@ const Sidebar = () => {
       <div className="bottom">
         <ul>
           <p className="title">MAIN</p>
-          <Link to="/home" style={{ textDecoration: "none" }}>
+          <Link to="/" style={{ textDecoration: "none" }}>
             <li>
               <DashboardIcon className="icon" />
               <span>Dashboard</span>
             </li>
           </Link>
-
-          <p className="title">MANAGEMENT</p>
-          <Link to="/users" style={{ textDecoration: "none" }}>
+          {/* <Link to="/order" style={{ textDecoration: "none" }}>
             <li>
-              <Person3Outlined className="icon" />
-              <span>Users</span>
+              <CreditCardOutlined className="icon" />
+              <span>Transactions</span>
             </li>
-          </Link>
-
-          <Link to="/packageInDays" style={{ textDecoration: "none" }}>
+          </Link> */}
+          <Link to="/service" style={{ textDecoration: "none" }}>
             <li>
-              <LocalGroceryStoreOutlined className="icon" />
-              <span>PackageInDay</span>
-            </li>
-          </Link>
-
-          <Link to="/packages" style={{ textDecoration: "none" }}>
-            <li>
-              <InsertChartOutlinedSharp className="icon" />
-              <span>Package</span>
-            </li>
-          </Link>
-
-          <Link to="/packageInDestinations" style={{ textDecoration: "none" }}>
-            <li>
-              <SettingsOutlined className="icon" />
-              <span>PackageInDestination</span>
-            </li>
-          </Link>
-
-          <Link to="/destinations" style={{ textDecoration: "none" }}>
-            <li>
-              <DiamondOutlined className="icon" />
-              <span>Destination</span>
-            </li>
-          </Link>
-
-          <Link to="/services" style={{ textDecoration: "none" }}>
-            <li>
-              <DnsOutlined className="icon" />
+              <TripOriginOutlined className="icon" />
               <span>Service</span>
             </li>
           </Link>
 
+          <p className="title">MANAGEMENT</p>
+          <Link to="/package-in-day" style={{ textDecoration: "none" }}>
+            <li>
+              <CardTravelOutlined className="icon" />
+              <span>PackageInDay</span>
+            </li>
+          </Link>
+          <Link to="/package" style={{ textDecoration: "none" }}>
+            <li>
+              <BackpackOutlined className="icon" />
+              <span>Package</span>
+            </li>
+          </Link>
+          <Link to="/destination" style={{ textDecoration: "none" }}>
+            <li>
+              <AddLocationAltOutlined className="icon" />
+              <span>Destination</span>
+            </li>
+          </Link>
           <Link to="/city" style={{ textDecoration: "none" }}>
             <li>
               <LocationCityIcon className="icon" />
               <span>City</span>
             </li>
           </Link>
-
-          <Link to="/orders" style={{ textDecoration: "none" }}>
+          <Link to="/user" style={{ textDecoration: "none" }}>
             <li>
-              <CreditCardOutlined className="icon" />
-              <span>Orders</span>
+              <Person3Outlined className="icon" />
+              <span>User</span>
             </li>
           </Link>
 

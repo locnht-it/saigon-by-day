@@ -1,105 +1,138 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./destinationtable.scss";
-import { DataGrid } from "@mui/x-data-grid";
-
-export const rows = [
-  {
-    id: 1,
-    galleryId: 1,
-    name: "Hoàng Thành Huế",
-    address: "Lê Huân, Phú Hậu, Thành phố Huế, Thừa Thiên Huế",
-    description:
-      "Đại Nội Huế có hơn 100 công trình kiến trúc nổi bật như Ngọ Môn, Điện Thái Hòa, Cung Diên Thọ, Cung Trường Sanh, Hưng Miếu, Thế Miếu... Quần thể công trình cổ kính này được bố trí theo nguyên tắc tả nam hữu nữ, tả văn hữu võ, tính từ trong ra. Ngay cả các miếu thờ cũng có sự sắp xếp theo thứ tự tả chiêu hữu mục (trái trước, phải sau, lần lượt theo thời gian).",
-    status: "active",
-    shortDescription:
-      "Đại Nội Huế có hơn 100 công trình kiến trúc nổi bật như Ngọ Môn, Điện Thái Hòa",
-    activities: "Tham quan Hoàng Thành Huế",
-    city: "Thành phố Huế",
-  },
-  {
-    id: 2,
-    galleryId: 2,
-    name: "Landmark 81",
-    address:
-      "720A Đ. Điện Biên Phủ, Vinhomes Tân Cảng, Bình Thạnh, Hồ Chí Minh",
-    description:
-      "Landmark 81 là tòa nhà cao bậc nhất Đông Nam Á, nằm trong tổ hợp dự án Vinhomes Central Park tại Sài Gòn. Ở bất cứ đâu trong thành phố, bạn cũng dễ dàng nhìn thấy tòa nhà chọc trời này. ",
-    shortDescription:
-      "Landmark 81 là tòa nhà cao bậc nhất Đông Nam Á, nằm trong tổ hợp dự án Vinhomes Central Park tại Sài Gòn",
-    activities: "Ăn uống, mua sắm",
-    city: "Thành phố Hồ Chí Minh",
-    status: "inactive",
-  },
-  {
-    id: 3,
-    galleryId: 3,
-    name: "Văn Miếu Quốc Tử Giám",
-    address: "58 P. Quốc Tử Giám, Văn Miếu, Đống Đa, Hà Nội",
-    description:
-      "Văn Miếu Quốc Tử Giám là quần thể nằm trong danh sách các Di tích Quốc gia đặc biệt của Việt Nam, niềm tự hào của con dân đất Việt. Với bề dày văn hóa – lịch sử lâu đời, khu di tích đã trở thành điểm đến hấp dẫn trong các chuyến tham quan, khám phá du lịch Hà Nội. Đồng thời, đây cũng là nơi mà các cô cậu học trò, sĩ tử đến cầu may mắn trước mỗi kỳ thi quan trọng.",
-    shortDescription:
-      "Văn Miếu Quốc Tử Giám là quần thể nằm trong danh sách các Di tích Quốc gia đặc biệt của Việt Nam,...",
-    status: "active",
-    activities: "Tham quan Văn Miếu",
-    city: "Thủ đô Hà Nội",
-  },
-];
-
-export const columns = [
-  { field: "id", headerName: "ID", width: 50 },
-  { field: "galleryId", headerName: "Gallery ID", width: 80 },
-  { field: "name", headerName: "Name", width: 200 },
-  { field: "address", headerName: "Address", width: 200 },
-  { field: "shortDescription", headerName: "Short Description", width: 200 },
-  { field: "description", headerName: "Description", width: 200 },
-  { field: "activities", headerName: "Activities", width: 200 },
-  { field: "city", headerName: "City", width: 150 },
-  {
-    field: "status",
-    headerName: "Status",
-    width: 100,
-    renderCell: (params) => {
-      return (
-        <div className={`cellWithStatus ${params.row.status}`}>
-          {params.row.status}
-        </div>
-      );
-    },
-  },
-];
+import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
+import { deleteDestination, listDestinations } from "../../api/destinationApi";
+import { getCity } from "../../api/cityApi";
 
 const DestinationTable = () => {
-  const [data, setData] = useState(rows);
+  const [destinations, setDestinations] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [cityNamesCache, setCityNamesCache] = useState({});
 
-  const actionColumn = [
-    {
-      field: "action",
-      headerName: "Action",
-      width: 200,
-      renderCell: (params) => {
-        return (
-          <div className="cellAction">
-            <div className="editButton">Edit</div>
-            <div className="deleteButton">Delete</div>
-          </div>
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getAllDestinations(1, 5);
+  }, []);
+
+  const getAllDestinations = (page, limit) => {
+    listDestinations(page, limit)
+      .then(async (response) => {
+        const destinations = response.data.content;
+        setDestinations(destinations);
+        setTotalPages(response.data.meatadataDTO.total);
+
+        // Fetch city names for all destinations
+        const cityIds = destinations.map((d) => d.cityId);
+        const uniqueCityIds = [...new Set(cityIds)];
+        const cityNames = {};
+
+        await Promise.all(
+          uniqueCityIds.map(async (cityId) => {
+            if (!cityNamesCache[cityId]) {
+              try {
+                const response = await getCity(cityId);
+                cityNames[cityId] = response.data.content.name;
+              } catch (error) {
+                console.error(error);
+              }
+            }
+          })
         );
-      },
-    },
-  ];
 
+        setCityNamesCache((prev) => ({ ...prev, ...cityNames }));
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const addNewDestination = () => {
+    navigate("/destination/save");
+  };
+
+  const updateDestination = (id) => {
+    navigate(`/destination/update/${id}`);
+  };
+
+  const removeDestination = (id) => {
+    deleteDestination(id)
+      .then(() => {
+        getAllDestinations(1, 5);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handlePageClick = (event) => {
+    getAllDestinations(event.selected + 1, 5);
+  };
   return (
-    <div className="datatable">
-      <div className="datatableTitle">
-        <span>Destination Management</span>
-        <span className="link">Add New</span>
-      </div>
-      <DataGrid
-        className="datagrid"
-        rows={data}
-        columns={columns.concat(actionColumn)}
-        pageSize={8}
-        rowsPerPageOptions={[5]}
-        checkboxSelection
+    <div className="container">
+      <h2 className="text-center">Destination Management</h2>
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={addNewDestination}
+        id="addButton"
+      >
+        Add New Destination
+      </button>
+      <table className="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th className="text-center">Name</th>
+            <th className="text-center">Address</th>
+            <th className="text-center">Status</th>
+            <th className="text-center">City</th>
+            <th className="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {destinations.map((destination) => (
+            <tr key={destination.id}>
+              <td>{destination.name}</td>
+              <td>{destination.address}</td>
+              <td>{destination.status ? "Active" : "Inactive"}</td>
+              <td>{cityNamesCache[destination.cityId] || "Loading..."}</td>
+              <td className="d-flex">
+                <button
+                  className="btn btn-info me-2"
+                  onClick={() => updateDestination(destination.id)}
+                >
+                  View
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => removeDestination(destination.id)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <ReactPaginate
+        breakLabel="..."
+        nextLabel="next >"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={5}
+        pageCount={totalPages}
+        previousLabel="< previous"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        containerClassName="pagination"
+        activeClassName="active"
       />
     </div>
   );

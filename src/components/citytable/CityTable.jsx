@@ -1,40 +1,25 @@
 import React, { useEffect, useState } from "react";
 import "./citytable.scss";
-import { DataGrid } from "@mui/x-data-grid";
-import { useUser } from "../../app/userContext";
 import { useNavigate } from "react-router-dom";
 import { deleteCity, listCities } from "../../api/cityApi";
 import ReactPaginate from "react-paginate";
-import { getAuthToken } from "../../api/axios_helper";
-
-export const columns = [
-  { field: "id", headerName: "ID", width: 50 },
-  { field: "Name", headerName: "Name", width: 120 },
-];
 
 const CityTable = () => {
   const [cities, setCities] = useState([]);
-  //const [totalCities, setTotalCities] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     getAllCities(1, 5);
   }, []);
 
   function getAllCities(page, limit) {
-    const token = getAuthToken();
-
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-    console.log("Headers:", headers); // In ra headers để kiểm tra
-
-    listCities(page, limit, { headers })
+    listCities(page, limit)
       .then((response) => {
-        setCities(response.data);
-        setTotalPages(response.data.meatadataDTO.total);
+        console.log(response.data);
+        setCities(response.data.content);
+        setTotalPages(response.data.meatadataDTO.total); // Sửa lại để tính đúng số trang
       })
       .catch((error) => {
         console.error(error);
@@ -42,19 +27,19 @@ const CityTable = () => {
   }
 
   function addNewCity() {
-    navigator("/save");
+    navigate("/city/save");
   }
 
   function updateCity(id) {
-    navigator(`/update/${id}`);
+    navigate(`/city/update/${id}`);
   }
 
   function removeCity(id) {
     console.log(id);
 
     deleteCity(id)
-      .then((response) => {
-        getAllCities();
+      .then(() => {
+        getAllCities(1, 5); // Cập nhật lại danh sách thành phố sau khi xóa
       })
       .catch((error) => {
         console.error(error);
@@ -68,39 +53,50 @@ const CityTable = () => {
   return (
     <div className="container">
       <h2 className="text-center">City Management</h2>
-      <button type="button" className="btn btn-primary" onClick={addNewCity}>
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={addNewCity}
+        id="addButton"
+      >
         Add New City
       </button>
       <table className="table table-striped table-bordered">
         <thead>
           <tr>
-            <th>City Id</th>
-            <th>City Name</th>
-            <th>Actions</th>
+            <th className="text-center">City Code</th>
+            <th className="text-center">City Name</th>
+            <th className="text-center">Status</th>
+            <th className="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {cities.map((city) => (
-            <tr key={city.id}>
-              <td>{city.id}</td>
-              <td>{city.name}</td>
-              <td>
-                <button
-                  className="btn btn-info"
-                  onClick={() => updateCity(city.id)}
-                >
-                  Update
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => removeCity(city.id)}
-                  style={{ marginLeft: "10px" }}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
+          {cities.map(
+            (city) => (
+              //city.status ? ( // Kiểm tra trạng thái của thành phố
+              <tr key={city.id}>
+                <td>{city.code}</td>
+                <td>{city.name}</td>
+                {city.status ? <td>Active</td> : <td>Inactive</td>}
+                <td className="d-flex">
+                  <button
+                    className="btn btn-info me-2"
+                    onClick={() => updateCity(city.id)}
+                  >
+                    Update
+                  </button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => removeCity(city.id)}
+                    style={{ marginLeft: "10px" }}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            )
+            //) : null // Không hiển thị nếu `city.status` là `false`
+          )}
         </tbody>
       </table>
       <ReactPaginate
@@ -124,4 +120,5 @@ const CityTable = () => {
     </div>
   );
 };
+
 export default CityTable;

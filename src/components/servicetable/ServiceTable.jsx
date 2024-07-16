@@ -1,114 +1,154 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./servicetable.scss";
-import { DataGrid } from "@mui/x-data-grid";
-import { useUser } from "../../app/userContext";
-
-export const rows = [
-  {
-    id: 1,
-    name: "Dịch vụ tham quan Hoàng Thành Huế",
-    description:
-      "Dịch vụ tham quan Hoàng Thành Huế sẽ cung cấp vé cho khách hàng vào thời điểm trước khi tham quan Hoàng Thành và hướng dẫn viên cùng đồng hành xuyên suốt dịch vụ.",
-    startTime: "8:00",
-    endTime: "11:00",
-    price: 300000,
-    category: "Di tích lịch sử",
-    status: "active",
-    shortDescription:
-      "Mua vé vào Hoàng Thành Huế và hướng dẫn viên giới thiệu về Hoàng Thành.",
-    destinationId: 1,
-    supplierId: 1,
-  },
-  {
-    id: 2,
-    name: "Dịch vụ dùng bữa tại Hadilao Landmark81",
-    description:
-      "Đặt chỗ, chọn món và thanh toán bữa trưa tại Haidilao Landmark81",
-    startTime: "8:00",
-    endTime: "11:00",
-    price: 1000000,
-    category: "Ăn uống",
-    status: "active",
-    shortDescription:
-      "Đặt chỗ, chọn món và thanh toán bữa trưa tại Haidilao Landmark81",
-    destinationId: 2,
-    supplierId: 2,
-  },
-  {
-    id: 3,
-    name: "Dịch vụ tham quan Văn Miếu Quốc Tử Giám",
-    description:
-      "Dịch vụ tham quan Văn Miếu sẽ cung cấp vé cho khách hàng vào thời điểm trước khi tham quan Văn Miếu và hướng dẫn viên cùng đồng hành xuyên suốt dịch vụ.",
-    startTime: "8:00",
-    endTime: "11:00",
-    price: 100000,
-    category: "Ăn uống",
-    status: "active",
-    shortDescription:
-      "Mua vé vào Hoàng Thành Huế và hướng dẫn viên giới thiệu về Văn Miếu.",
-    destinationId: 3,
-    supplierId: 3,
-  },
-];
-
-export const columns = [
-  { field: "id", headerName: "ID", width: 50 },
-  { field: "destinationId", headerName: "Destination ID", width: 120 },
-  { field: "supplierId", headerName: "Supplier ID", width: 100 },
-  { field: "name", headerName: "Name", width: 200 },
-  { field: "price", headerName: "Price", width: 200 },
-  { field: "category", headerName: "Category", width: 200 },
-  { field: "shortDescription", headerName: "Short Description", width: 200 },
-  { field: "description", headerName: "Description", width: 200 },
-  { field: "startTime", headerName: "Start Time", width: 200 },
-  { field: "endTime", headerName: "End Time", width: 200 },
-  {
-    field: "status",
-    headerName: "Status",
-    width: 100,
-    renderCell: (params) => {
-      return (
-        <div className={`cellWithStatus ${params.row.status}`}>
-          {params.row.status}
-        </div>
-      );
-    },
-  },
-];
+import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
+import { getDestination } from "../../api/destinationApi";
+import { deleteService, listServices } from "../../api/serviceApi";
 
 const ServiceTable = () => {
-  const [data, setData] = useState(rows);
-  const { user } = useUser();
+  const [services, setServices] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [destinationNamesCache, setDestinationNamesCache] = useState({});
 
-  const actionColumn = [
-    {
-      field: "action",
-      headerName: "Action",
-      width: 200,
-      renderCell: (params) => {
-        return (
-          <div className="cellAction">
-            <div className="editButton">Edit</div>
-            <div className="deleteButton">Delete</div>
-          </div>
+  const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+    getAllServices(1, 5);
+  }, []);
+
+  const getAllServices = (page, limit) => {
+    listServices(page, limit)
+      .then(async (response) => {
+        const services = response.data.content;
+        setServices(services);
+        setTotalPages(response.data.meatadataDTO.total);
+
+        const destinationIds = services.map((d) => d.destinationId);
+        const uniqueDestinationIds = [...new Set(destinationIds)];
+        const destinationNames = {};
+
+        await Promise.all(
+          uniqueDestinationIds.map(async (destinationId) => {
+            if (!destinationNamesCache[destinationId]) {
+              try {
+                const response = await getDestination(destinationId);
+                destinationNames[destinationId] = response.data.content.name;
+              } catch (error) {
+                console.error(error);
+              }
+            }
+          })
         );
-      },
-    },
-  ];
+
+        setDestinationNamesCache((prev) => ({ ...prev, ...destinationNames }));
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const addNewService = () => {
+    navigate("/service/save");
+  };
+
+  const updateService = (id) => {
+    navigate(`/service/update/${id}`);
+  };
+
+  const removeService = (id) => {
+    deleteService(id)
+      .then(() => {
+        getAllServices(1, 5);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handlePageClick = (event) => {
+    getAllServices(event.selected + 1, 5);
+  };
+
+  // Utility function to convert timestamp to datetime string
+  const convertLongToDateTime = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
-    <div className="datatable">
-      <div className="datatableTitle">
-        <span>Service Management</span>
-        <span className="link">Add New</span>
-      </div>
-      <DataGrid
-        className="datagrid"
-        rows={data}
-        columns={columns.concat(actionColumn)}
-        pageSize={8}
-        rowsPerPageOptions={[5]}
-        checkboxSelection
+    <div className="container">
+      <h2 className="text-center">Service Management</h2>
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={addNewService}
+        id="addButton"
+      >
+        Add New Service
+      </button>
+      <table className="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th className="text-center">Name</th>
+            <th className="text-center">Destination</th>
+            <th className="text-center">Created By</th>
+            <th className="text-center">Status</th>
+            <th className="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {services.map((service) => (
+            <tr key={service.id}>
+              <td>{service.name}</td>
+              <td>
+                {destinationNamesCache[service.destinationId] || "Loading..."}
+              </td>
+              {user ? <td>{user.fullname}</td> : <td>No user logged in</td>}
+              <td>{service.status ? "Active" : "Inactive"}</td>
+              <td className="d-flex">
+                <button
+                  className="btn btn-info me-2"
+                  onClick={() => updateService(service.id)}
+                >
+                  View
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => removeService(service.id)}
+                  style={{ marginLeft: "10px" }}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <ReactPaginate
+        breakLabel="..."
+        nextLabel="next >"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={5}
+        pageCount={totalPages}
+        previousLabel="< previous"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        containerClassName="pagination"
+        activeClassName="active"
       />
     </div>
   );

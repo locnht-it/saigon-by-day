@@ -3,6 +3,7 @@ import "./Users.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import Datatable from "../../components/datatable/Datatable";
+import UserTable from "../../components/usertable/UserTable";
 
 const Users = () => {
   return (
@@ -11,7 +12,7 @@ const Users = () => {
 
       <div className="usersContainer">
         <Navbar />
-        <Datatable />
+        <UserTable />
       </div>
     </div>
   );

@@ -1,101 +1,129 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./packageindaytable.scss";
-import { DataGrid } from "@mui/x-data-grid";
-
-export const rows = [
-  {
-    id: 1,
-    packageId: 1,
-    date: "5/24/2024",
-    price: 3_000_000,
-    status: "active",
-    numberAttendance: 5,
-  },
-  {
-    id: 2,
-    packageId: 1,
-    date: "6/1/2024",
-    price: 4_000_000,
-    status: "active",
-    numberAttendance: 5,
-  },
-  {
-    id: 3,
-    packageId: 2,
-    date: "5/30/2024",
-    price: 1_500_000,
-    status: "inactive",
-    numberAttendance: 7,
-  },
-  {
-    id: 4,
-    packageId: 3,
-    date: "5/31/2024",
-    price: 5_000_000,
-    status: "active",
-    numberAttendance: 10,
-  },
-  {
-    id: 5,
-    packageId: 4,
-    date: "5/25/2024",
-    price: 3_000_000,
-    status: "inactive",
-    numberAttendance: 5,
-  },
-];
-
-export const columns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "packageId", headerName: "Package ID", width: 200 },
-  { field: "date", headerName: "Date", width: 200 },
-  { field: "numberAttendance", headerName: "Number Attendance", width: 200 },
-  {
-    field: "status",
-    headerName: "Status",
-    width: 160,
-    renderCell: (params) => {
-      return (
-        <div className={`cellWithStatus ${params.row.status}`}>
-          {params.row.status}
-        </div>
-      );
-    },
-  },
-];
+import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
+import {
+  deletePackageInDay,
+  listPackageInDays,
+} from "../../api/packageInDayApi";
 
 const PackageInDayTable = () => {
-  const [data, setData] = useState(rows);
+  const [packageInDays, setPackageInDays] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const actionColumn = [
-    {
-      field: "action",
-      headerName: "Action",
-      width: 300,
-      renderCell: (params) => {
-        return (
-          <div className="cellAction">
-            <div className="editButton">Edit</div>
-            <div className="deleteButton">Delete</div>
-          </div>
-        );
-      },
-    },
-  ];
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getAllPackageInDays(1, 5);
+  }, []);
+
+  const getAllPackageInDays = (page, limit) => {
+    listPackageInDays(page, limit)
+      .then(async (response) => {
+        const packageInDays = response.data.content;
+        setPackageInDays(packageInDays);
+        setTotalPages(response.data.meatadataDTO.total);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const addNewPackageInDay = () => {
+    navigate("/package-in-day/save");
+  };
+
+  const updatePackageInDay = (id) => {
+    navigate(`/package-in-day/update/${id}`);
+  };
+
+  const removePackageInDay = (id) => {
+    deletePackageInDay(id)
+      .then(() => {
+        getAllPackageInDays(1, 5);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handlePageClick = (event) => {
+    getAllPackageInDays(event.selected + 1, 5);
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
 
   return (
-    <div className="datatable">
-      <div className="datatableTitle">
-        <span>PackageInDay Management</span>
-        <span className="link">Add New</span>
-      </div>
-      <DataGrid
-        className="datagrid"
-        rows={data}
-        columns={columns.concat(actionColumn)}
-        pageSize={8}
-        rowsPerPageOptions={[5]}
-        checkboxSelection
+    <div className="container">
+      <h2 className="text-center">PackageInDay Management</h2>
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={addNewPackageInDay}
+        id="addButton"
+      >
+        Add New PackageInDay
+      </button>
+      <table className="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th className="text-center">Code</th>
+            <th className="text-center">Package</th>
+            <th className="text-center">Date</th>
+            <th className="text-center">Status</th>
+            <th className="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {packageInDays.map((packageInDay) => (
+            <tr key={packageInDay.id}>
+              <td>{packageInDay.code}</td>
+              <td>{packageInDay.packageName}</td>
+              <td>{formatDate(packageInDay.date)}</td>
+              <td>{packageInDay.status ? "Active" : "Inactive"}</td>
+
+              <td className="d-flex">
+                <button
+                  className="btn btn-info me-2"
+                  onClick={() => updatePackageInDay(packageInDay.id)}
+                >
+                  View
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => removePackageInDay(packageInDay.id)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <ReactPaginate
+        breakLabel="..."
+        nextLabel="next >"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={5}
+        pageCount={totalPages}
+        previousLabel="< previous"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        containerClassName="pagination"
+        activeClassName="active"
       />
     </div>
   );
